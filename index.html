@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>俄羅斯方塊</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="game-layout">
+      <section class="board-wrap">
+        <canvas id="board" width="300" height="600" aria-label="遊戲畫面"></canvas>
+        <div id="overlay" class="overlay hidden"></div>
+      </section>
+
+      <aside class="panel">
+        <h1>俄羅斯方塊</h1>
+        <p>分數：<span id="score">0</span></p>
+        <p>等級：<span id="level">1</span></p>
+        <p>消除行數：<span id="lines">0</span></p>
+
+        <div class="actions">
+          <button id="restartBtn" type="button">重新開始</button>
+          <button id="pauseBtn" type="button">暫停</button>
+        </div>
+
+        <h2>下一個方塊</h2>
+        <canvas id="next" width="120" height="120" aria-label="下一個方塊"></canvas>
+
+        <div class="controls">
+          <h2>操作</h2>
+          <ul>
+            <li>← / →：移動</li>
+            <li>↑：旋轉</li>
+            <li>↓：加速下落</li>
+            <li>空白鍵：瞬間落下</li>
+            <li>P：暫停 / 繼續</li>
+            <li>R：重新開始</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
