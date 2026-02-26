@@ -3,7 +3,6 @@
   --panel: #1f2937;
   --text: #f9fafb;
   --accent: #38bdf8;
-  --grid: #334155;
 }
 
 * {
@@ -22,8 +21,10 @@ body {
 
 .game-layout {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   align-items: flex-start;
+  justify-content: center;
   padding: 1rem;
 }
 
@@ -45,10 +46,11 @@ body {
   display: grid;
   place-items: center;
   text-align: center;
+  white-space: pre-line;
   background: rgb(15 23 42 / 70%);
-  color: white;
+  color: #fff;
   font-size: 1.3rem;
-  font-weight: bold;
+  font-weight: 700;
   padding: 1rem;
 }
 
@@ -57,7 +59,7 @@ body {
 }
 
 .panel {
-  width: 240px;
+  width: min(320px, 90vw);
   background: var(--panel);
   border: 1px solid #334155;
   border-radius: 8px;
@@ -72,6 +74,28 @@ h2 {
 
 p {
   margin: 0.3rem 0;
+}
+
+.actions {
+  margin: 0.8rem 0;
+  display: flex;
+  gap: 0.6rem;
+}
+
+button {
+  flex: 1;
+  border: 0;
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0b1220;
+  background: #67e8f9;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(0.95);
 }
 
 .controls ul {

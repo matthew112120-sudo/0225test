@@ -1,6 +1,7 @@
 const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
+
 const COLORS = {
   I: "#06b6d4",
   O: "#facc15",
@@ -57,6 +58,8 @@ const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 const linesEl = document.getElementById("lines");
 const overlayEl = document.getElementById("overlay");
+const restartBtn = document.getElementById("restartBtn");
+const pauseBtn = document.getElementById("pauseBtn");
 
 let board = [];
 let current = null;
@@ -127,8 +130,8 @@ function clearLines() {
     if (board[y].every((cell) => cell !== null)) {
       board.splice(y, 1);
       board.unshift(Array(COLS).fill(null));
-      cleared++;
-      y++;
+      cleared += 1;
+      y += 1;
     }
   }
 
@@ -149,17 +152,21 @@ function spawnPiece() {
   next = randomPiece();
   current.x = Math.floor(COLS / 2) - Math.ceil(current.matrix[0].length / 2);
   current.y = -1;
-  if (collides(current, 0, 0)) {
+
+  if (collides(current)) {
     gameOver = true;
     running = false;
-    showOverlay("遊戲結束\n按 R 重新開始");
+    paused = false;
+    pauseBtn.textContent = "暫停";
+    showOverlay("遊戲結束\n按 R 或點擊重新開始");
   }
 }
 
 function softDrop() {
   if (!running) return;
+
   if (!collides(current, 0, 1)) {
-    current.y++;
+    current.y += 1;
   } else {
     mergePiece(current);
     clearLines();
@@ -171,7 +178,7 @@ function softDrop() {
 function hardDrop() {
   if (!running) return;
   while (!collides(current, 0, 1)) {
-    current.y++;
+    current.y += 1;
     score += 2;
   }
   updateHud();
@@ -187,6 +194,7 @@ function spin() {
   if (!running) return;
   const rotated = rotate(current.matrix);
   const kicks = [0, -1, 1, -2, 2];
+
   for (const kick of kicks) {
     if (!collides(current, kick, 0, rotated)) {
       current.matrix = rotated;
@@ -217,8 +225,9 @@ function drawBoard() {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
       const type = board[y][x];
-      if (type) drawCell(boardCtx, x, y, COLORS[type]);
-      else {
+      if (type) {
+        drawCell(boardCtx, x, y, COLORS[type]);
+      } else {
         boardCtx.strokeStyle = "#1e293b";
         boardCtx.strokeRect(x * BLOCK, y * BLOCK, BLOCK, BLOCK);
       }
@@ -239,6 +248,7 @@ function drawBoard() {
 function drawNext() {
   nextCtx.fillStyle = "#020617";
   nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+
   if (!next) return;
 
   const size = 24;
@@ -276,30 +286,31 @@ function resetGame() {
   gameOver = false;
   paused = false;
   running = true;
+  pauseBtn.textContent = "暫停";
+
   current = randomPiece();
   next = randomPiece();
+
   updateHud();
   hideOverlay();
 }
 
 function togglePause() {
   if (gameOver) return;
-  if (!running) {
-    if (paused) {
-      running = true;
-      paused = false;
-      hideOverlay();
-    }
+
+  if (running) {
+    running = false;
+    paused = true;
+    pauseBtn.textContent = "繼續";
+    showOverlay("已暫停\n按 P 或點擊繼續");
     return;
   }
-  running = false;
-  paused = true;
-  showOverlay("已暫停\n按 P 繼續");
-}
 
-function startGame() {
-  if (!running && !paused && !gameOver) {
-    resetGame();
+  if (paused) {
+    running = true;
+    paused = false;
+    pauseBtn.textContent = "暫停";
+    hideOverlay();
   }
 }
 
@@ -309,9 +320,7 @@ function update(time = 0) {
 
   if (running) {
     dropCounter += delta;
-    if (dropCounter > dropInterval()) {
-      softDrop();
-    }
+    if (dropCounter > dropInterval()) softDrop();
   }
 
   draw();
@@ -337,11 +346,7 @@ document.addEventListener("keydown", (event) => {
       spin();
       break;
     case "Space":
-      if (!running && !paused && !gameOver) {
-        startGame();
-      } else {
-        hardDrop();
-      }
+      hardDrop();
       break;
     case "KeyP":
       togglePause();
@@ -355,8 +360,8 @@ document.addEventListener("keydown", (event) => {
   event.preventDefault();
 });
 
-showOverlay("按空白鍵開始");
-updateHud();
-spawnPiece();
-draw();
+restartBtn.addEventListener("click", resetGame);
+pauseBtn.addEventListener("click", togglePause);
+
+resetGame();
 requestAnimationFrame(update);
